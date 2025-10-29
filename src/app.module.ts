@@ -4,11 +4,12 @@ import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { PrismaModule } from './database/prisma/prisma.module';
+import { appConfig } from './config/app.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [configuration],
+      load: [configuration, appConfig],
       isGlobal: true,
       envFilePath: '.env',
     }),
