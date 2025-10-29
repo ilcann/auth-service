@@ -11,6 +11,8 @@ import { Cookies } from 'src/common/decorators/cookies.decorator';
 import { refreshCookie } from './utils/auth-cookie.util';
 import { ConfigService } from '@nestjs/config';
 import { LoginDto } from './dto/login.dto';
+import { plainToInstance } from 'class-transformer';
+import { UserResponseDto } from '../users/dto/user-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -33,8 +35,14 @@ export class AuthController {
     // 3️⃣ Refresh token'ı cookie’ye set et
     refreshCookie.set(res, tokens.refreshToken, this.configService);
 
-    // 4️⃣ Access token’ı body’de gönder
+    // 4️⃣ UserResponseDto'ya dönüştürme
+    const userResponse = plainToInstance(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
+
+    // 5️⃣ Response
     return {
+      user: userResponse,
       accessToken: tokens.accessToken,
     };
   }
