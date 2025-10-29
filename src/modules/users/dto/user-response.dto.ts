@@ -34,4 +34,8 @@ export class UserResponseDto {
 
   @Exclude()
   passwordHash?: string;
+
+  constructor(partial: Partial<UserResponseDto>) {
+    Object.assign(this, partial);
+  }
 }
