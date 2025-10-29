@@ -8,15 +8,15 @@ datasource db {
 }
 
 model User {
-  id        Int    @id @default(autoincrement())
-  email     String @unique
+  id        String  @id @default(cuid())
+  email     String  @unique
   firstName String
   lastName  String
-  password  String
+  passwordHash  String
 
   isSystem  Boolean @default(false)
 
-  departmentId Int?
+  departmentId String?
   department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
 
   role   UserRole   @default(USER)
@@ -31,7 +31,7 @@ model User {
 }
 
 model Department {
-  id          Int     @id @default(autoincrement())
+  id          String  @id @default(cuid())
   name        String  @unique
   description String?
 
@@ -42,12 +42,12 @@ model Department {
 }
 
 model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  userId    Int
+  id        String   @id @default(cuid())
+  jti       String   @unique
+  tokenHash String   @unique
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
-
   createdAt DateTime @default(now())
 }
 
