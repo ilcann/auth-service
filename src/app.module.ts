@@ -1,8 +1,19 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from './database/prisma/prisma.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ConfigModule.forRoot({
+      load: [configuration],
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    UsersModule,
+    AuthModule,
+  ],
   controllers: [],
   providers: [],
 })
