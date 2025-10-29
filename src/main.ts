@@ -39,7 +39,7 @@ async function bootstrap() {
   app.setGlobalPrefix(appConfig!.globalPrefix!);
   await app.listen(appConfig!.port, appConfig!.host);
   console.log(
-    `🚀 Application "${appConfig!.name}" is running on: http://${appConfig!.host}:${appConfig!.port}`,
+    `🚀 Application "${appConfig!.name}" is running on: http://${appConfig!.host}:${appConfig!.port}/${appConfig!.globalPrefix}`,
   );
 }
 void bootstrap();
