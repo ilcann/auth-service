@@ -15,7 +15,7 @@ export const swaggerConfig = registerAs('swagger', (): SwaggerConfig => {
   const description =
     process.env.SWAGGER_DESCRIPTION || 'Auth Service API Documentation';
   const version = process.env.SWAGGER_VERSION || '1.0';
-  const path = process.env.SWAGGER_PATH || '/docs';
+  const path = process.env.SWAGGER_PATH || '/api/docs';
   const bearerName = 'accessToken';
 
   return {

@@ -5,6 +5,7 @@ export interface AppConfig {
   port: number; // Uygulamanın çalışacağı port
   host: string; // Uygulamanın host adresi
   name: string; // Uygulama adı
+  globalPrefix?: string; // İsteğe bağlı: API için global prefix
 }
 
 export const appConfig = registerAs('app', (): AppConfig => {
@@ -12,11 +13,13 @@ export const appConfig = registerAs('app', (): AppConfig => {
   const host = process.env.HOST || '0.0.0.0';
   const name = process.env.APP_NAME || 'Auth Service';
   const env = process.env.NODE_ENV || 'development';
+  const globalPrefix = process.env.GLOBAL_PREFIX || 'api';
 
   return {
     env,
     port,
     host,
     name,
+    globalPrefix,
   };
 });

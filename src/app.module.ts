@@ -6,6 +6,7 @@ import configuration from './config/configuration';
 import { PrismaModule } from './database/prisma/prisma.module';
 import { appConfig } from './config/app.config';
 import { swaggerConfig } from './config/swagger.config';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { swaggerConfig } from './config/swagger.config';
     AuthModule,
     PrismaModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}
