@@ -5,11 +5,12 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { PrismaModule } from './database/prisma/prisma.module';
 import { appConfig } from './config/app.config';
+import { swaggerConfig } from './config/swagger.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [configuration, appConfig],
+      load: [configuration, appConfig, swaggerConfig],
       isGlobal: true,
       envFilePath: '.env',
     }),
