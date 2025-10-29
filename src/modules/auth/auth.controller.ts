@@ -66,4 +66,23 @@ export class AuthController {
       accessToken: tokens.accessToken,
     };
   }
+
+  @Post('logout')
+  async logout(
+    @Cookies('refreshToken') refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    if (!refreshToken) {
+      throw new UnauthorizedException('No refresh token provided');
+    }
+
+    // 1️⃣ Refresh token'ı doğrula
+    const { jti } = await this.authService.validateRefreshToken(refreshToken);
+    // 2️⃣ Token'ı iptal et
+    await this.authService.revokeRefreshToken(jti);
+    // 3️⃣ Cookie'den refresh token'ı sil
+    refreshCookie.clear(res);
+
+    return { message: 'Logged out successfully' };
+  }
 }
