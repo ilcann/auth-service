@@ -1,0 +1,138 @@
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { IAuthService } from './interfaces/auth-service.interface';
+import { ConfigService } from '@nestjs/config';
+import {
+  AccessTokenPayload,
+  RefreshTokenPayload,
+} from './interfaces/jwt-payload.interface';
+import { PrismaService } from 'src/database/prisma/prisma.service';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { User, UserStatus } from '@prisma/client';
+import cryptoUtils from './utils/crypto.util';
+import { uuid } from 'uuidv4';
+import { LoginDto } from './dto/login.dto';
+
+export class AuthService implements IAuthService {
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  async validateRefreshToken(
+    refreshToken: string,
+  ): Promise<{ user: User; jti: string }> {
+    const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(
+      refreshToken,
+      {
+        secret: this.configService.get('jwt.refreshSecret'),
+      },
+    );
+
+    const tokenInDb = await this.prisma.refreshToken.findUnique({
+      where: { jti: payload.jti },
+    });
+    if (!tokenInDb) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const isValid = await cryptoUtils.compareWithHash(
+      refreshToken,
+      tokenInDb.tokenHash,
+    );
+    if (!isValid) {
+      throw new UnauthorizedException('Refresh token mismatch');
+    }
+
+    if (tokenInDb.expiresAt < new Date()) {
+      throw new UnauthorizedException('Refresh token expired');
+    }
+
+    const user = await this.usersService.findById(tokenInDb.userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return { user, jti: tokenInDb.jti };
+  }
+
+  async validateUser(dto: LoginDto): Promise<User> {
+    const { email, password } = dto;
+
+    // 1. Email ile kullanıcıyı bul
+    const user = await this.usersService.findByEmail(email);
+    if (!user || user.status !== UserStatus.ACTIVE) {
+      throw new NotFoundException('User not found or inactive');
+    }
+
+    // 2. Şifreyi doğrula
+    const isPasswordValid = await cryptoUtils.compareWithHash(
+      password,
+      user.passwordHash,
+    );
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    return user;
+  }
+
+  async generateTokens(
+    user: User,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    // Access Token
+    const accessTokenSignOptions: JwtSignOptions = {
+      secret: this.configService.get('jwt.accessSecret'),
+      expiresIn: this.configService.get('jwt.accessExpiresIn'),
+    };
+    const accessTokenPayload: AccessTokenPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      isSystem: user.isSystem,
+      iss: 'auth-service',
+    };
+    const accessToken = await this.jwtService.signAsync(
+      accessTokenPayload,
+      accessTokenSignOptions,
+    );
+
+    // Refresh Token
+    const jti = uuid();
+    const refreshTokenPayload: RefreshTokenPayload = {
+      sub: user.id,
+      jti,
+    };
+    const refreshTokenSignOptions: JwtSignOptions = {
+      secret: this.configService.get('jwt.refreshSecret'),
+      expiresIn: this.configService.get('jwt.refreshExpiresIn'),
+    };
+    const refreshToken = await this.jwtService.signAsync(
+      refreshTokenPayload,
+      refreshTokenSignOptions,
+    );
+
+    // Refresh Token'ı hashleyip DB'ye kaydet
+    const refreshTokenHash = await cryptoUtils.hashPlainText(refreshToken);
+    const refreshTokenExpiresInMs = this.configService.get<number>(
+      'jwt.refreshExpiresInMs',
+    );
+    const refreshTokenExpiry = new Date(Date.now() + refreshTokenExpiresInMs!);
+    await this.prisma.refreshToken.create({
+      data: {
+        jti,
+        tokenHash: refreshTokenHash,
+        userId: user.id,
+        expiresAt: refreshTokenExpiry,
+      },
+    });
+
+    return { accessToken, refreshToken };
+  }
+
+  async revokeRefreshToken(jti: string): Promise<void> {
+    await this.prisma.refreshToken.deleteMany({ where: { jti } });
+  }
+}
