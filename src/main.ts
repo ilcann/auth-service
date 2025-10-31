@@ -17,6 +17,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const swaggerConfig = configService.get<SwaggerConfig>('swagger')!;
   const appConfig = configService.get<AppConfig>('app');
+  app.setGlobalPrefix(appConfig!.globalPrefix!);
 
   if (swaggerConfig.isEnabled) {
     const config = new DocumentBuilder()
@@ -36,7 +37,6 @@ async function bootstrap() {
     SwaggerModule.setup(swaggerConfig.path, app, document);
   }
 
-  app.setGlobalPrefix(appConfig!.globalPrefix!);
   await app.listen(appConfig!.port, appConfig!.host);
   console.log(
     `🚀 Application "${appConfig!.name}" is running on: http://${appConfig!.host}:${appConfig!.port}/${appConfig!.globalPrefix}`,
