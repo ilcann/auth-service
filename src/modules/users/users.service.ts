@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { IUsersService } from './interfaces/users-service.interface';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { User } from '@prisma/client';
+import { RegisterDto } from '../auth/dto/register.dto';
+import cryptoUtils from 'src/common/utils/crypto.util';
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -17,5 +19,19 @@ export class UsersService implements IUsersService {
 
   async findByUsername(username: string): Promise<User | null> {
     return await this.prisma.user.findUnique({ where: { username } });
+  }
+
+  async createUser(dto: RegisterDto): Promise<User> {
+    const { password, ...rest } = dto;
+
+    const passwordHash = await cryptoUtils.hashPlainText(password);
+
+    return await this.prisma.user.create({
+      data: {
+        ...rest,
+        passwordHash,
+        status: 'PENDING',
+      },
+    });
   }
 }
