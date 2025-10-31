@@ -4,15 +4,18 @@ import {
   Post,
   Res,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { Cookies } from 'src/common/decorators/cookies.decorator';
-import { refreshCookie } from './utils/auth-cookie.util';
 import { ConfigService } from '@nestjs/config';
 import { LoginDto } from './dto/login.dto';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from '../users/dto/user-response.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RegisterDto } from './dto/register.dto';
+import { refreshCookie } from './utils/auth-cookie.util';
 
 @Controller('auth')
 export class AuthController {
@@ -35,6 +38,29 @@ export class AuthController {
     // 3️⃣ Refresh token'ı cookie’ye set et
     refreshCookie.set(res, tokens.refreshToken, this.configService);
 
+    // 4️⃣ UserResponseDto'ya dönüştürme
+    const userResponse = plainToInstance(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
+
+    // 5️⃣ Response
+    return {
+      user: userResponse,
+      accessToken: tokens.accessToken,
+    };
+  }
+
+  @Post('register')
+  async register(
+    @Res({ passthrough: true }) res: Response,
+    @Body() dto: RegisterDto,
+  ) {
+    // 1️⃣ Kullanıcı kaydı
+    const user = await this.authService.registerUser(dto);
+    // 2️⃣ Token üretme
+    const tokens = await this.authService.generateTokens(user);
+    // 3️⃣ Refresh token'ı cookie’ye set et
+    refreshCookie.set(res, tokens.refreshToken, this.configService);
     // 4️⃣ UserResponseDto'ya dönüştürme
     const userResponse = plainToInstance(UserResponseDto, user, {
       excludeExtraneousValues: true,
@@ -76,6 +102,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
   async logout(
     @Cookies('refreshToken') refreshToken: string,
     @Res({ passthrough: true }) res: Response,

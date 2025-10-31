@@ -6,13 +6,20 @@ import {
   RefreshTokenPayload,
 } from './interfaces/jwt-payload.interface';
 import { PrismaService } from 'src/database/prisma/prisma.service';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { User, UserStatus } from '@prisma/client';
-import cryptoUtils from './utils/crypto.util';
+import cryptoUtils from '../../common/utils/crypto.util';
 import { uuid } from 'uuidv4';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
+@Injectable()
 export class AuthService implements IAuthService {
   constructor(
     private readonly jwtService: JwtService,
@@ -60,6 +67,8 @@ export class AuthService implements IAuthService {
 
   async validateUser(dto: LoginDto): Promise<User> {
     const { username, password } = dto;
+
+    console.log('Validating user with username:', username);
 
     // 1. Kullanıcı adı ile kullanıcıyı bul
     const user = await this.usersService.findByUsername(username);
@@ -134,5 +143,18 @@ export class AuthService implements IAuthService {
 
   async revokeRefreshToken(jti: string): Promise<void> {
     await this.prisma.refreshToken.deleteMany({ where: { jti } });
+  }
+
+  async registerUser(dto: RegisterDto): Promise<User> {
+    const { username } = dto;
+
+    const existing = await this.usersService.findByUsername(username);
+    if (existing) {
+      throw new ConflictException('Username already exists');
+    }
+
+    const newUser = await this.usersService.createUser(dto);
+
+    return newUser;
   }
 }
