@@ -2,10 +2,12 @@ import { UserRole } from '@prisma/client';
 
 interface AccessTokenPayload {
   sub: string; // user.id (string olarak)
+  username: string;
+  firstName: string;
+  lastName: string;
   email: string;
   role: UserRole; // "ADMIN" | "USER" | "SYSTEM"
   isSystem: boolean; // sistem kullanıcısı mı
-  iss: string; // issuer (örn: "auth-service")
 }
 
 interface RefreshTokenPayload {
