@@ -68,12 +68,16 @@ export class AuthService implements IAuthService {
   async validateUser(dto: LoginDto): Promise<User> {
     const { username, password } = dto;
 
-    console.log('Validating user with username:', username);
-
     // 1. Kullanıcı adı ile kullanıcıyı bul
     const user = await this.usersService.findByUsername(username);
-    if (!user || user.status !== UserStatus.ACTIVE) {
-      throw new NotFoundException('User not found or inactive');
+    if (!user) {
+      console.log('User not found or inactive:', username);
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.status !== UserStatus.ACTIVE) {
+      console.log('User is not active:', username);
+      throw new UnauthorizedException('User is not active');
     }
 
     // 2. Şifreyi doğrula
@@ -93,15 +97,17 @@ export class AuthService implements IAuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     // Access Token
     const accessTokenSignOptions: JwtSignOptions = {
-      secret: this.configService.get('jwt.accessSecret'),
-      expiresIn: this.configService.get('jwt.accessExpiresIn'),
+      secret: this.configService.get('jwt.secret'),
+      expiresIn: this.configService.get('jwt.expiresIn'),
     };
     const accessTokenPayload: AccessTokenPayload = {
       sub: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
       role: user.role,
       isSystem: user.isSystem,
-      iss: 'auth-service',
     };
     const accessToken = await this.jwtService.signAsync(
       accessTokenPayload,
@@ -146,11 +152,13 @@ export class AuthService implements IAuthService {
   }
 
   async registerUser(dto: RegisterDto): Promise<User> {
-    const { username } = dto;
+    const { email, username } = dto;
 
-    const existing = await this.usersService.findByUsername(username);
-    if (existing) {
-      throw new ConflictException('Username already exists');
+    const usernameExisting = await this.usersService.findByUsername(username);
+    const emailExists = await this.usersService.findByEmail(email);
+
+    if (usernameExisting || emailExists) {
+      throw new ConflictException('Username or email already exists');
     }
 
     const newUser = await this.usersService.createUser(dto);
