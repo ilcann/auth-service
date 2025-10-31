@@ -59,10 +59,10 @@ export class AuthService implements IAuthService {
   }
 
   async validateUser(dto: LoginDto): Promise<User> {
-    const { email, password } = dto;
+    const { username, password } = dto;
 
-    // 1. Email ile kullanıcıyı bul
-    const user = await this.usersService.findByEmail(email);
+    // 1. Kullanıcı adı ile kullanıcıyı bul
+    const user = await this.usersService.findByUsername(username);
     if (!user || user.status !== UserStatus.ACTIVE) {
       throw new NotFoundException('User not found or inactive');
     }
