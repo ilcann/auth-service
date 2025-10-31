@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IUsersService } from './interfaces/users-service.interface';
 import { PrismaService } from 'src/database/prisma/prisma.service';
-import { User } from '@prisma/client';
+import { User, UserRole, UserStatus } from '@prisma/client';
 import { RegisterDto } from '../auth/dto/register.dto';
 import cryptoUtils from 'src/common/utils/crypto.util';
 
@@ -30,7 +30,8 @@ export class UsersService implements IUsersService {
       data: {
         ...rest,
         passwordHash,
-        status: 'PENDING',
+        status: UserStatus.ACTIVE, // Geçici olarak ACTIVE yapıldı User manegement eklendiğinde değiştirilecek
+        role: UserRole.USER,
       },
     });
   }
