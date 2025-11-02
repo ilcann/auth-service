@@ -1,10 +1,6 @@
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { IAuthService } from './interfaces/auth-service.interface';
 import { ConfigService } from '@nestjs/config';
-import {
-  AccessTokenPayload,
-  RefreshTokenPayload,
-} from './interfaces/jwt-payload.interface';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import {
   ConflictException,
@@ -13,11 +9,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { User, UserStatus } from '@prisma/client';
+import { User } from './interfaces/user.type';
 import cryptoUtils from '../../common/utils/crypto.util';
 import { uuid } from 'uuidv4';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import {
+  AccessTokenPayload,
+  RefreshTokenPayload,
+} from '@tssx-bilisim/praiven-contracts/auth';
+import { UserStatus } from '@prisma/client';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -106,8 +107,11 @@ export class AuthService implements IAuthService {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      role: user.role,
       isSystem: user.isSystem,
+      roleId: user.roleId,
+      roleName: user.role.name,
+      departmentId: user.departmentId,
+      departmentName: user.department.name,
     };
     const accessToken = await this.jwtService.signAsync(
       accessTokenPayload,
