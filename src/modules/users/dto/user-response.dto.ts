@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { UserRole, UserStatus } from '@prisma/client';
+import type { UserStatus } from '@prisma/client';
 
 export class UserResponseDto {
   @Expose()
@@ -21,13 +21,13 @@ export class UserResponseDto {
   isSystem: boolean;
 
   @Expose()
-  role: UserRole;
-
-  @Expose()
   status: UserStatus;
 
   @Expose()
   departmentId?: number;
+
+  @Expose()
+  roleId?: number;
 
   @Expose()
   createdAt: Date;
