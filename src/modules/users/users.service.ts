@@ -42,10 +42,10 @@ export class UsersService implements IUsersService {
         passwordHash,
         status: UserStatus.ACTIVE, // Geçici olarak ACTIVE yapıldı User manegement eklendiğinde değiştirilecek
         role: {
-          connect: { key: 'User' }, // Default role olarak 'User' atanıyor seed.ts'deki role key değerine göre
+          connect: { key: 'user' }, // Default role olarak 'User' atanıyor seed.ts'deki role key değerine göre
         },
         department: {
-          connect: { key: 'GENERAL' }, // Default department olarak 'GENERAL' atanıyor seed.ts'deki department key değerine göre
+          connect: { key: 'general' }, // Default department olarak 'GENERAL' atanıyor seed.ts'deki department key değerine göre
         },
       },
       include: { role: true, department: true },
