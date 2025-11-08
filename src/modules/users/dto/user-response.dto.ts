@@ -1,5 +1,7 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import type { UserStatus } from '@prisma/client';
+import { UserRoleDto } from './user-role.dto';
+import { UserDepartmentDto } from './user-department.dto';
 
 export class UserResponseDto {
   @Expose()
@@ -24,10 +26,12 @@ export class UserResponseDto {
   status: UserStatus;
 
   @Expose()
-  departmentId?: number;
+  @Type(() => UserDepartmentDto)
+  department: UserDepartmentDto;
 
   @Expose()
-  roleId?: number;
+  @Type(() => UserRoleDto)
+  role: UserRoleDto;
 
   @Expose()
   createdAt: Date;
