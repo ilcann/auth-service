@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from './config/app.config';
@@ -11,6 +11,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe());
+
+  const logger = new Logger('Bootstrap');
 
   app.use(cookieParser());
 
@@ -38,7 +40,7 @@ async function bootstrap() {
   }
 
   await app.listen(appConfig!.port, appConfig!.host);
-  console.log(
+  logger.debug(
     `🚀 Application "${appConfig!.name}" is running on: http://${appConfig!.host}:${appConfig!.port}/${appConfig!.globalPrefix}`,
   );
 }
