@@ -1,9 +1,7 @@
 import {
   Body,
   Controller,
-  Get,
   Post,
-  Req,
   Res,
   UnauthorizedException,
   UseGuards,
@@ -18,8 +16,6 @@ import { UserResponseDto } from '../users/dto/user-response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterDto } from './dto/register.dto';
 import { refreshCookie } from './utils/auth-cookie.util';
-import type { Request } from 'express';
-import { ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from '../users/users.service';
 
 @Controller('auth')
@@ -125,18 +121,5 @@ export class AuthController {
     refreshCookie.clear(res);
 
     return { message: 'Logged out successfully' };
-  }
-
-  @ApiBearerAuth('accessToken')
-  @Get('me')
-  @UseGuards(AuthGuard('jwt'))
-  getMe(@Req() req: Request) {
-    const user = req.user;
-
-    return {
-      user: plainToInstance(UserResponseDto, user, {
-        excludeExtraneousValues: true,
-      }),
-    };
   }
 }
