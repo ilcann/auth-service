@@ -6,7 +6,7 @@ import {
   Min,
   IsEnum,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { UserStatus } from '@prisma/client';
 
 export class GetUsersQueryDto {
@@ -22,6 +22,11 @@ export class GetUsersQueryDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    if (Array.isArray(value)) return value as string[];
+    return [value as string]; // Convert single value to array
+  })
   departmentIds?: string[];
 
   @IsOptional()

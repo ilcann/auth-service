@@ -5,6 +5,7 @@ import { plainToInstance } from 'class-transformer';
 import { CurrentUser, type RequestUser } from '@tssx-bilisim/praiven-contracts';
 import { GetUsersResponseDto } from './dto/get-users-response.dto';
 import { GetUsersQueryDto } from './dto/get-users-query.dto';
+import { UserStatus } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
@@ -23,8 +24,22 @@ export class UsersController {
 
   @Get()
   async getUsers(
-    @Query() query: GetUsersQueryDto,
+    @Query('search') search?: string,
+    @Query('roleIds[]') roleIds?: string[],
+    @Query('departmentIds[]') departmentIds?: string[],
+    @Query('statuses[]') statuses?: UserStatus[],
+    @Query('page') page?: string,
+    @Query('size') size?: string,
   ): Promise<GetUsersResponseDto> {
-    return await this.usersService.getUsers(query);
+    const queryDto: GetUsersQueryDto = {
+      search,
+      roleIds,
+      departmentIds,
+      statuses,
+      page: page ? Number(page) : undefined,
+      size: size ? Number(size) : undefined,
+    };
+
+    return await this.usersService.getUsers(queryDto);
   }
 }

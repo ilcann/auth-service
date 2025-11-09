@@ -65,13 +65,15 @@ export class UsersService implements IUsersService {
         ],
       }),
       ...(roleIds?.length && {
-        roleId: { in: roleIds },
+        roleId: { in: Array.isArray(roleIds) ? roleIds : [roleIds] },
       }),
       ...(departmentIds?.length && {
-        departmentId: { in: departmentIds },
+        departmentId: {
+          in: Array.isArray(departmentIds) ? departmentIds : [departmentIds],
+        },
       }),
       ...(statuses?.length && {
-        status: { in: statuses },
+        status: { in: Array.isArray(statuses) ? statuses : [statuses] },
       }),
     };
 
