@@ -1,7 +1,7 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import type { UserStatus } from '@prisma/client';
-import { UserRoleDto } from './user-role.dto';
 import { UserDepartmentDto } from './user-department.dto';
+import { UserRoleDto } from 'src/modules/roles/entities/user-role.dto';
 
 export class UserResponseDto {
   @Expose()

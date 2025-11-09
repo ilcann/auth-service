@@ -7,6 +7,8 @@ import { PrismaModule } from './database/prisma/prisma.module';
 import { appConfig } from './config/app.config';
 import { swaggerConfig } from './config/swagger.config';
 import { AppController } from './app.controller';
+import { DepartmentsModule } from './modules/departments/departments.module';
+import { RolesModule } from './modules/roles/roles.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { AppController } from './app.controller';
     UsersModule,
     AuthModule,
     PrismaModule,
+    DepartmentsModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [],

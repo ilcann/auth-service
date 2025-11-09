@@ -10,7 +10,16 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // ✅ Gerekli: DTO'ları otomatik transform et
+      whitelist: true, // Tanımlı olmayan prop'ları sil
+      forbidNonWhitelisted: true, // Tanımlı olmayan prop varsa hata fırlat
+      transformOptions: {
+        enableImplicitConversion: true, // ✅ Gerekli: Implicit type conversion
+      },
+    }),
+  );
 
   const logger = new Logger('Bootstrap');
 
