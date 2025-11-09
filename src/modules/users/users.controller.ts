@@ -25,6 +25,6 @@ export class UsersController {
   async getUsers(
     @Query() query: GetUsersQueryDto,
   ): Promise<GetUsersResponseDto> {
-    return this.usersService.getUsers(query);
+    return await this.usersService.getUsers(query);
   }
 }

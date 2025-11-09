@@ -5,7 +5,7 @@ import { UserDepartmentDto } from './user-department.dto';
 
 export class UserResponseDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   username: string;
