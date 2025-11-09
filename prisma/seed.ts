@@ -16,6 +16,7 @@ async function main() {
     update: { name: 'General' },
     // If not found, create it with this data
     create: {
+      id: 'default-general-department',
       key: 'general',
       name: 'General',
       description: 'Default general-purpose department',
