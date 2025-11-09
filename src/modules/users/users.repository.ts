@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { User } from 'src/modules/auth/interfaces/user.type';
-import { UserStatus } from '@prisma/client';
+import { Prisma, UserStatus } from '@prisma/client';
 
 @Injectable()
 export class UsersRepository {
@@ -52,5 +52,29 @@ export class UsersRepository {
       },
       include: { role: true, department: true },
     });
+  }
+
+  async findMany(
+    where: Prisma.UserWhereInput,
+    options: {
+      skip?: number;
+      take?: number;
+      orderBy?: Prisma.UserOrderByWithRelationInput;
+    } = {},
+  ): Promise<User[]> {
+    return await this.prisma.user.findMany({
+      where,
+      include: {
+        role: true,
+        department: true,
+      },
+      skip: options.skip,
+      take: options.take,
+      orderBy: options.orderBy,
+    });
+  }
+
+  async count(where: Prisma.UserWhereInput): Promise<number> {
+    return await this.prisma.user.count({ where });
   }
 }
