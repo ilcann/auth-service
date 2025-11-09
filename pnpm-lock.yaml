@@ -33,8 +33,8 @@ importers:
         specifier: ^6.18.0
         version: 6.18.0(prisma@6.18.0(typescript@5.9.3))(typescript@5.9.3)
       '@tssx-bilisim/praiven-contracts':
-        specifier: ^1.3.2
-        version: 1.3.2(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+        specifier: ^1.6.2
+        version: 1.6.2(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@types/passport-jwt':
         specifier: ^4.0.1
         version: 4.0.1
@@ -905,8 +905,8 @@ packages:
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
-  '@tssx-bilisim/praiven-contracts@1.3.2':
-    resolution: {integrity: sha512-uwd/wPFPGeM2IpYslEvgNFhM9MzpMKQJcAp1Kf2JQNh6HH1l2dQ7HNntSYD7q09I5CHPYTgus3myk0Alqi12og==, tarball: https://npm.pkg.github.com/download/@tssx-bilisim/praiven-contracts/1.3.2/98da65a28668f4ed8d29e3773d3b18cf2904abde}
+  '@tssx-bilisim/praiven-contracts@1.6.2':
+    resolution: {integrity: sha512-s8Te+HXBKcA41HrpIKpJ67XHyOs0qKDQ/EZfZ4//3naEWtexxSjDNGJLFFN1XwAent0CA2C05v31mc8HktjthA==, tarball: https://npm.pkg.github.com/download/@tssx-bilisim/praiven-contracts/1.6.2/5fd9da766217f57fc8acc8fc4b06f2b89674c70e}
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -4327,7 +4327,7 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
-  '@tssx-bilisim/praiven-contracts@1.3.2(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)':
+  '@tssx-bilisim/praiven-contracts@1.6.2(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)':
     dependencies:
       '@nestjs/common': 11.1.8(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
     transitivePeerDependencies:

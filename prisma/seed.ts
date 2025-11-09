@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { getAllRoles } from '@tssx-bilisim/praiven-contracts/auth';
 
 // Initialize Prisma Client
 const prisma = new PrismaClient();
@@ -24,34 +25,28 @@ async function main() {
   console.log(`Default department created/verified: ${defaultDepartment.name}`);
 
   // --- Create the Default Roles ---
-  const [userRole, adminRole] = await Promise.all([
-    // 1. USER Role
-    prisma.userRole.upsert({
-      // Find the role with the key 'USER'
-      where: { key: 'user' },
-      update: { name: 'User' },
-      create: {
-        key: 'user',
-        name: 'User',
-        description: 'Standard user role',
-      },
-    }),
-    // 2. ADMIN Role
-    prisma.userRole.upsert({
-      // Find the role with the key 'ADMIN'
-      where: { key: 'admin' },
-      update: { name: 'Admin' },
-      create: {
-        key: 'admin',
-        name: 'Admin',
-        description: 'Administrator role',
-      },
-    }),
-  ]);
+  const roles = getAllRoles();
 
-  console.log(
-    `Default roles created/verified: ${userRole.name}, ${adminRole.name}`,
-  );
+  for (const role of roles) {
+    const result = await prisma.userRole.upsert({
+      where: { id: role.id },
+      update: {
+        key: role.key,
+        name: role.name,
+        description: role.description,
+      },
+      create: {
+        id: role.id,
+        key: role.key,
+        name: role.name,
+        description: role.description,
+      },
+    });
+
+    console.log(`✅ ${result.name} (${result.key}) - ID: ${result.id}`);
+  }
+  console.log('✅ Roles seeded successfully');
+
   console.log('Seeding process completed successfully.');
 }
 
