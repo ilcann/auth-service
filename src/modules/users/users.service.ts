@@ -35,7 +35,7 @@ export class UsersService implements IUsersService {
       ...rest,
       passwordHash,
       status: UserStatus.ACTIVE, // Geçici olarak ACTIVE yapıldı User manegement eklendiğinde değiştirilecek
-      roleKey: 'admin', // Default role olarak 'admin' geçici olarak atanıyor seed.ts'deki role key değerine göre
+      roleKey: 'ADMIN', // Default role olarak 'admin' geçici olarak atanıyor seed.ts'deki role key değerine göre
       departmentKey: 'general', // Default department olarak 'GENERAL' atanıyor seed.ts'deki department key değerine göre
     });
   }
